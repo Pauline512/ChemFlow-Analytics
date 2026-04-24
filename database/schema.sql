@@ -1,45 +1,34 @@
-import sqlite3
-import pandas as pd
-import os
+-- Global Patent Intelligence Database Schema
+-- Created for Cloud Computing & Big Data Mini Project
 
-DB_PATH = "database/patents.db"
-os.makedirs("database", exist_ok=True)
+-- Patents table
+CREATE TABLE IF NOT EXISTS patents (
+    patent_id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    abstract TEXT,
+    filing_date TEXT,
+    year INTEGER
+);
 
-print("Connecting to database...")
-conn = sqlite3.connect(DB_PATH)
-cursor = conn.cursor()
+-- Inventors table
+CREATE TABLE IF NOT EXISTS inventors (
+    inventor_id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    country TEXT
+);
 
-print("Creating tables from schema...")
-with open("database/schema.sql", "r") as f:
-    schema = f.read()
-cursor.executescript(schema)
-conn.commit()
+-- Companies (Assignees) table
+CREATE TABLE IF NOT EXISTS companies (
+    company_id TEXT PRIMARY KEY,
+    name TEXT NOT NULL
+);
 
-print("Loading clean data...")
-patents_df = pd.read_csv("data/clean_patents.csv")
-inventors_df = pd.read_csv("data/clean_inventors.csv")
-companies_df = pd.read_csv("data/clean_companies.csv")
-relationships_df = pd.read_csv("data/clean_relationships.csv")
-
-print("Inserting data into database...")
-patents_df.to_sql("patents", conn, if_exists="replace", index=False)
-print(f"  patents table: {len(patents_df)} rows inserted")
-
-inventors_df.to_sql("inventors", conn, if_exists="replace", index=False)
-print(f"  inventors table: {len(inventors_df)} rows inserted")
-
-companies_df.to_sql("companies", conn, if_exists="replace", index=False)
-print(f"  companies table: {len(companies_df)} rows inserted")
-
-relationships_df.to_sql("relationships", conn, if_exists="replace", index=False)
-print(f"  relationships table: {len(relationships_df)} rows inserted")
-
-print("\nVerifying tables...")
-tables = ["patents", "inventors", "companies", "relationships"]
-for table in tables:
-    cursor.execute(f"SELECT COUNT(*) FROM {table}")
-    count = cursor.fetchone()[0]
-    print(f"  {table}: {count} rows")
-
-conn.close()
-print("\nDatabase created successfully at database/patents.db")
+-- Relationships table (links patents to inventors and companies)
+CREATE TABLE IF NOT EXISTS relationships (
+    patent_id TEXT,
+    inventor_id TEXT,
+    company_id TEXT,
+    FOREIGN KEY (patent_id) REFERENCES patents(patent_id),
+    FOREIGN KEY (inventor_id) REFERENCES inventors(inventor_id),
+    FOREIGN KEY (company_id) REFERENCES companies(company_id)
+);
