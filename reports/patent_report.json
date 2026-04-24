@@ -1,0 +1,201 @@
+{
+    "total_patents": 1000,
+    "top_inventors": [
+        {
+            "rank": 1,
+            "name": "Priya Zhang",
+            "country": "DE",
+            "patents": 8
+        },
+        {
+            "rank": 2,
+            "name": "James Wang",
+            "country": "CN",
+            "patents": 8
+        },
+        {
+            "rank": 3,
+            "name": "Min Zhang",
+            "country": "DE",
+            "patents": 8
+        },
+        {
+            "rank": 4,
+            "name": "John Dupont",
+            "country": "CA",
+            "patents": 8
+        },
+        {
+            "rank": 5,
+            "name": "Emma Zhang",
+            "country": "DE",
+            "patents": 7
+        },
+        {
+            "rank": 6,
+            "name": "Alice Patel",
+            "country": "TW",
+            "patents": 7
+        },
+        {
+            "rank": 7,
+            "name": "Priya Smith",
+            "country": "KR",
+            "patents": 7
+        },
+        {
+            "rank": 8,
+            "name": "Sofia Kim",
+            "country": "FR",
+            "patents": 7
+        },
+        {
+            "rank": 9,
+            "name": "Sofia Wang",
+            "country": "US",
+            "patents": 7
+        },
+        {
+            "rank": 10,
+            "name": "Li Patel",
+            "country": "JP",
+            "patents": 7
+        }
+    ],
+    "top_companies": [
+        {
+            "rank": 1,
+            "name": "Toyota",
+            "patents": 74
+        },
+        {
+            "rank": 2,
+            "name": "Samsung",
+            "patents": 74
+        },
+        {
+            "rank": 3,
+            "name": "Bosch",
+            "patents": 73
+        },
+        {
+            "rank": 4,
+            "name": "Sony",
+            "patents": 73
+        },
+        {
+            "rank": 5,
+            "name": "Huawei",
+            "patents": 71
+        },
+        {
+            "rank": 6,
+            "name": "Apple Inc",
+            "patents": 69
+        },
+        {
+            "rank": 7,
+            "name": "Google Llc",
+            "patents": 69
+        },
+        {
+            "rank": 8,
+            "name": "Siemens",
+            "patents": 68
+        },
+        {
+            "rank": 9,
+            "name": "Lg Electronics",
+            "patents": 67
+        },
+        {
+            "rank": 10,
+            "name": "Basf",
+            "patents": 64
+        }
+    ],
+    "top_countries": [
+        {
+            "country": "DE",
+            "patents": 124
+        },
+        {
+            "country": "TW",
+            "patents": 114
+        },
+        {
+            "country": "FR",
+            "patents": 112
+        },
+        {
+            "country": "US",
+            "patents": 106
+        },
+        {
+            "country": "KR",
+            "patents": 105
+        },
+        {
+            "country": "JP",
+            "patents": 95
+        },
+        {
+            "country": "IN",
+            "patents": 93
+        },
+        {
+            "country": "CA",
+            "patents": 93
+        },
+        {
+            "country": "GB",
+            "patents": 83
+        },
+        {
+            "country": "CN",
+            "patents": 75
+        }
+    ],
+    "yearly_trends": [
+        {
+            "year": 2015,
+            "patents": 77
+        },
+        {
+            "year": 2016,
+            "patents": 106
+        },
+        {
+            "year": 2017,
+            "patents": 93
+        },
+        {
+            "year": 2018,
+            "patents": 97
+        },
+        {
+            "year": 2019,
+            "patents": 101
+        },
+        {
+            "year": 2020,
+            "patents": 114
+        },
+        {
+            "year": 2021,
+            "patents": 104
+        },
+        {
+            "year": 2022,
+            "patents": 111
+        },
+        {
+            "year": 2023,
+            "patents": 97
+        },
+        {
+            "year": 2024,
+            "patents": 100
+        }
+    ]
+}
