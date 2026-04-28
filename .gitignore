@@ -1,0 +1,12 @@
+# Large data files - don't push to GitHub
+data/raw_*.csv
+data/*.tsv
+data/*.zip
+
+# Database file (too large)
+database/patents.db
+
+# Python cache
+__pycache__/
+*.pyc
+.env
