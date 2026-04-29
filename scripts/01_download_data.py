@@ -37,9 +37,10 @@ FILES = {
     "patent_abstract": S3 + "g_patent_abstract.tsv.zip",
     "inventor":        S3 + "g_inventor_disambiguated.tsv.zip",
     "assignee":        S3 + "g_assignee_disambiguated.tsv.zip",
-    "patent_inventor": S3 + "g_patent_inventor.tsv.zip",
-    "patent_assignee": S3 + "g_patent_assignee.tsv.zip",
-    "location":        S3 + "g_location_disambiguated.tsv.zip",
+    # ✅ FIXED URLs — these are the correct filenames on S3
+    "patent_inventor": S3 + "g_inventor_not_disambiguated.tsv.zip",
+    "patent_assignee": S3 + "g_assignee_not_disambiguated.tsv.zip",
+    "location":        S3 + "g_location_not_disambiguated.tsv.zip",
 }
 
 
@@ -145,41 +146,68 @@ abstract_df = read_tsv_chunks(
     "Abstracts", FILES["patent_abstract"],
     filter_col="patent_id", filter_values=chem_ids
 )
-# Detect abstract text column
 ab_txt_col = next((c for c in abstract_df.columns
                    if "abstract" in c.lower()), None)
 
 
-# ── STEP 4: Inventors ─────────────────────────────────────────────────────────
-inventor_df = read_tsv_chunks(
-    "Inventors", FILES["inventor"]
-)
-
-
-# ── STEP 5: Assignees (companies) ─────────────────────────────────────────────
-assignee_df = read_tsv_chunks(
-    "Assignees", FILES["assignee"]
-)
-
-
-# ── STEP 6: Patent–Inventor links ─────────────────────────────────────────────
+# ── STEP 4: Patent–Inventor links (not-disambiguated has patent_id + inventor_id)
 pi_df = read_tsv_chunks(
-    "Patent–Inventor links", FILES["patent_inventor"],
+    "Patent-Inventor links", FILES["patent_inventor"],
     filter_col="patent_id", filter_values=chem_ids
 )
+print(f"  Columns in patent_inventor: {list(pi_df.columns)}")
+
+# Get inventor IDs linked to our chemistry patents
+inv_id_col_pi = next((c for c in pi_df.columns if "inventor_id" in c.lower()), None)
+chem_inv_ids  = set(pi_df[inv_id_col_pi].dropna().astype(str).unique()) if inv_id_col_pi else set()
+print(f"  Chemistry-linked inventor IDs: {len(chem_inv_ids):,}")
 
 
-# ── STEP 7: Patent–Assignee links ─────────────────────────────────────────────
+# ── STEP 5: Patent–Assignee links ─────────────────────────────────────────────
 pa_df = read_tsv_chunks(
-    "Patent–Assignee links", FILES["patent_assignee"],
+    "Patent-Assignee links", FILES["patent_assignee"],
     filter_col="patent_id", filter_values=chem_ids
 )
+print(f"  Columns in patent_assignee: {list(pa_df.columns)}")
+
+# Get assignee IDs linked to our chemistry patents
+asg_id_col_pa = next((c for c in pa_df.columns if "assignee_id" in c.lower()), None)
+chem_asg_ids  = set(pa_df[asg_id_col_pa].dropna().astype(str).unique()) if asg_id_col_pa else set()
+print(f"  Chemistry-linked assignee IDs: {len(chem_asg_ids):,}")
+
+
+# ── STEP 6: Inventors — filtered to only chemistry-linked inventors ───────────
+inventor_df = read_tsv_chunks(
+    "Inventors (filtered)", FILES["inventor"],
+    filter_col="disamb_inventor_id_20" if "disamb_inventor_id_20" in ["disamb_inventor_id_20"] else None,
+    filter_values=chem_inv_ids if chem_inv_ids else None
+)
+# Re-filter by inventor_id if we have chem_inv_ids
+if chem_inv_ids:
+    inv_id_col = next((c for c in inventor_df.columns if "inventor_id" in c.lower()), None)
+    if inv_id_col:
+        inventor_df = inventor_df[inventor_df[inv_id_col].astype(str).isin(chem_inv_ids)]
+        print(f"  After inventor filter: {len(inventor_df):,} rows")
+
+
+# ── STEP 7: Assignees — filtered to only chemistry-linked assignees ───────────
+assignee_df = read_tsv_chunks(
+    "Assignees (filtered)", FILES["assignee"],
+    filter_col="assignee_id" if chem_asg_ids else None,
+    filter_values=chem_asg_ids if chem_asg_ids else None
+)
+if chem_asg_ids:
+    asg_id_col = next((c for c in assignee_df.columns if "assignee_id" in c.lower()), None)
+    if asg_id_col:
+        assignee_df = assignee_df[assignee_df[asg_id_col].astype(str).isin(chem_asg_ids)]
+        print(f"  After assignee filter: {len(assignee_df):,} rows")
 
 
 # ── STEP 8: Locations ─────────────────────────────────────────────────────────
 location_df = read_tsv_chunks(
     "Locations", FILES["location"]
 )
+print(f"  Columns in location: {list(location_df.columns)}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -194,7 +222,6 @@ print("=" * 60)
 print("\nBuilding raw_patents.csv ...")
 
 patents_out = patent_df.rename(columns={
-    "patent_id":    "patent_id",
     "patent_title": "title",
     "patent_date":  "filing_date"
 })[["patent_id", "title", "filing_date"]].copy()
@@ -203,7 +230,6 @@ patents_out["filing_date"] = pd.to_datetime(patents_out["filing_date"], errors="
 patents_out["year"]        = patents_out["filing_date"].dt.year
 patents_out["filing_date"] = patents_out["filing_date"].dt.strftime("%Y-%m-%d")
 
-# Merge abstract
 if ab_txt_col:
     ab_col = next((c for c in abstract_df.columns if "patent_id" in c.lower()), None)
     if ab_col:
@@ -216,23 +242,23 @@ else:
     patents_out["abstract"] = ""
 
 patents_out.to_csv(f"{DATA_DIR}/raw_patents.csv", index=False)
-print(f"  → raw_patents.csv   ({len(patents_out):,} rows)")
+print(f"  → raw_patents.csv        ({len(patents_out):,} rows)")
 
 
 # ── raw_inventors.csv ─────────────────────────────────────────────────────────
 print("\nBuilding raw_inventors.csv ...")
 
-inv_id  = next(c for c in inventor_df.columns if "inventor_id"  in c.lower())
-inv_fn  = next((c for c in inventor_df.columns if "first"       in c.lower()), None)
-inv_ln  = next((c for c in inventor_df.columns if "last"        in c.lower()), None)
-inv_loc = next((c for c in inventor_df.columns if "location_id" in c.lower()), None)
+inv_id  = next((c for c in inventor_df.columns if "inventor_id"  in c.lower()), inventor_df.columns[0])
+inv_fn  = next((c for c in inventor_df.columns if "first"        in c.lower()), None)
+inv_ln  = next((c for c in inventor_df.columns if "last"         in c.lower()), None)
+inv_loc = next((c for c in inventor_df.columns if "location_id"  in c.lower()), None)
 
 inventors_out = pd.DataFrame()
-inventors_out["inventor_id"] = inventor_df[inv_id]
+inventors_out["inventor_id"] = inventor_df[inv_id].values
 inventors_out["name"] = (
     (inventor_df[inv_fn].fillna("") + " " +
      inventor_df[inv_ln].fillna("")).str.strip()
-    if inv_fn and inv_ln else inventor_df[inv_id]
+    if inv_fn and inv_ln else inventor_df[inv_id].values
 )
 
 # Attach country via location table
@@ -249,45 +275,52 @@ else:
     inventors_out["country"] = "Unknown"
 
 inventors_out.to_csv(f"{DATA_DIR}/raw_inventors.csv", index=False)
-print(f"  → raw_inventors.csv ({len(inventors_out):,} rows)")
+print(f"  → raw_inventors.csv      ({len(inventors_out):,} rows)")
 
 
 # ── raw_companies.csv ─────────────────────────────────────────────────────────
 print("\nBuilding raw_companies.csv ...")
 
-asg_id  = next(c for c in assignee_df.columns if "assignee_id"   in c.lower())
-asg_org = next((c for c in assignee_df.columns if "organization" in c.lower()), None)
-asg_nm  = next((c for c in assignee_df.columns if "name"         in c.lower()), None)
+asg_id  = next((c for c in assignee_df.columns if "assignee_id"   in c.lower()), assignee_df.columns[0])
+asg_org = next((c for c in assignee_df.columns if "organization"  in c.lower()), None)
+asg_nm  = next((c for c in assignee_df.columns if "name"          in c.lower()), None)
 
 companies_out = pd.DataFrame()
-companies_out["company_id"] = assignee_df[asg_id]
+companies_out["company_id"] = assignee_df[asg_id].values
 companies_out["name"] = (
-    assignee_df[asg_org] if asg_org else
-    assignee_df[asg_nm]  if asg_nm  else
-    assignee_df[asg_id]
+    assignee_df[asg_org].values if asg_org else
+    assignee_df[asg_nm].values  if asg_nm  else
+    assignee_df[asg_id].values
 )
 companies_out = companies_out.dropna(subset=["name"])
 companies_out.to_csv(f"{DATA_DIR}/raw_companies.csv", index=False)
-print(f"  → raw_companies.csv ({len(companies_out):,} rows)")
+print(f"  → raw_companies.csv      ({len(companies_out):,} rows)")
 
 
 # ── raw_relationships.csv ─────────────────────────────────────────────────────
 print("\nBuilding raw_relationships.csv ...")
 
-pi_pat = next(c for c in pi_df.columns if "patent_id"   in c.lower())
-pi_inv = next(c for c in pi_df.columns if "inventor_id" in c.lower())
-inv_links = pi_df[[pi_pat, pi_inv]].rename(
-    columns={pi_pat: "patent_id", pi_inv: "inventor_id"})
+pi_pat = next((c for c in pi_df.columns if "patent_id"   in c.lower()), None)
+pi_inv = next((c for c in pi_df.columns if "inventor_id" in c.lower()), None)
 
-pa_pat = next(c for c in pa_df.columns if "patent_id"   in c.lower())
-pa_asg = next(c for c in pa_df.columns if "assignee_id" in c.lower())
-asg_links = pa_df[[pa_pat, pa_asg]].rename(
-    columns={pa_pat: "patent_id", pa_asg: "company_id"})
+pa_pat = next((c for c in pa_df.columns if "patent_id"   in c.lower()), None)
+pa_asg = next((c for c in pa_df.columns if "assignee_id" in c.lower()), None)
 
-relationships_out = inv_links.merge(asg_links, on="patent_id", how="inner")
-relationships_out = relationships_out.dropna()
+if pi_pat and pi_inv and pa_pat and pa_asg:
+    inv_links = pi_df[[pi_pat, pi_inv]].rename(
+        columns={pi_pat: "patent_id", pi_inv: "inventor_id"})
+    asg_links = pa_df[[pa_pat, pa_asg]].rename(
+        columns={pa_pat: "patent_id", pa_asg: "company_id"})
+    relationships_out = inv_links.merge(asg_links, on="patent_id", how="inner")
+    relationships_out = relationships_out.dropna()
+else:
+    print("  WARNING: Could not find expected columns in patent_inventor or patent_assignee")
+    print(f"  patent_inventor cols: {list(pi_df.columns)}")
+    print(f"  patent_assignee cols: {list(pa_df.columns)}")
+    relationships_out = pd.DataFrame(columns=["patent_id", "inventor_id", "company_id"])
+
 relationships_out.to_csv(f"{DATA_DIR}/raw_relationships.csv", index=False)
-print(f"  → raw_relationships.csv ({len(relationships_out):,} rows)")
+print(f"  → raw_relationships.csv  ({len(relationships_out):,} rows)")
 
 
 # ── Summary ───────────────────────────────────────────────────────────────────

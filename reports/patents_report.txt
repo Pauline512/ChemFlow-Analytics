@@ -1,0 +1,18 @@
+PATENTS CLEANING REPORT
+========================================
+Rows    : 1,000
+Columns : 5
+
+Missing values per column:
+patent_id      0
+title          0
+abstract       0
+filing_date    0
+year           0
+dtype: int64
+
+Sample (first 3 rows):
+   patent_id                            title                                                                                                                                                                     abstract filing_date  year
+0  US9000001     Optical Communication System  A system and method for drug delivery mechanism comprising quantum components configured to improve efficiency and performance in image recognition algorithm applications.  2022-03-04  2022
+1  US9000002         Optical Network Protocol           A system and method for data processing method comprising photonic components configured to improve efficiency and performance in battery technology applications.  2016-07-25  2016
+2  US9000003  Wireless Data Processing Method         A system and method for image recognition algorithm comprising quantum components configured to improve efficiency and performance in network protocol applications.  2015-05-11  2015

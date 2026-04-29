@@ -1,0 +1,101 @@
+patent_id,title,year,inventor_name,inventor_country,company_name
+US9000010,Photonic Sensor Array,2024,James Lee,FR,Ibm
+US9000016,Wireless Sensor Array,2024,Park Lee,US,Google Llc
+US9000018,Encrypted Energy Storage Device,2024,Park Tanaka,GB,Huawei
+US9000052,Neural Data Processing Method,2024,Sofia Garcia,KR,Microsoft
+US9000094,Modular Display Panel,2024,John Patel,DE,Microsoft
+US9000095,Optical Display Panel,2024,Alice Sato,GB,Bosch
+US9000105,Autonomous Network Protocol,2024,Yuki Wang,IN,Google Llc
+US9000122,Autonomous Display Panel,2024,Alice Hassan,FR,Qualcomm
+US9000158,Autonomous Sensor Array,2024,James Patel,US,Siemens
+US9000163,Neural Sensor Array,2024,Sofia Mueller,GB,Huawei
+US9000166,Wireless Network Protocol,2024,Park Mueller,IN,Ibm
+US9000175,Optical Drug Delivery Mechanism,2024,Sofia Sato,CA,Apple Inc
+US9000180,Autonomous Communication System,2024,Park Rossi,TW,Microsoft
+US9000185,Biomedical Network Protocol,2024,Wei Garcia,TW,Siemens
+US9000186,Modular Communication System,2024,Emma Rossi,IN,Ibm
+US9000192,Autonomous Machine Learning Model,2024,James Wang,CN,Sony
+US9000197,Encrypted Data Processing Method,2024,Park Dupont,JP,Canon
+US9000200,Semiconductor Image Recognition Algorithm,2024,Sofia Kim,FR,Lg Electronics
+US9000234,Modular Image Recognition Algorithm,2024,John Johnson,US,Siemens
+US9000244,Modular Machine Learning Model,2024,Sofia Wang,US,Basf
+US9000260,Biomedical Machine Learning Model,2024,James Wang,CN,Huawei
+US9000270,Biomedical Energy Storage Device,2024,Wei Brown,FR,Samsung
+US9000285,Neural Network Protocol,2024,James Brown,IN,Lg Electronics
+US9000293,Encrypted Image Recognition Algorithm,2024,James Wang,CN,Samsung
+US9000297,Optical Drug Delivery Mechanism,2024,Park Lee,TW,Ibm
+US9000299,Encrypted Sensor Array,2024,Omar Rossi,CN,Apple Inc
+US9000324,Neural Network Protocol,2024,Wei Garcia,US,Apple Inc
+US9000339,Neural Energy Storage Device,2024,Alice Hassan,FR,Ibm
+US9000352,Photonic Communication System,2024,Min Johnson,DE,Lg Electronics
+US9000358,Biomedical Sensor Array,2024,Park Hassan,JP,Toyota
+US9000362,Neural Sensor Array,2024,Li Hassan,IN,Microsoft
+US9000364,Semiconductor Display Panel,2024,Carlos Sato,KR,Lg Electronics
+US9000368,Semiconductor Sensor Array,2024,Yuki Hassan,JP,Huawei
+US9000375,Encrypted Network Protocol,2024,Carlos Garcia,US,Siemens
+US9000378,Modular Network Protocol,2024,Carlos Brown,IN,Basf
+US9000383,Quantum Communication System,2024,Carlos Sato,JP,Microsoft
+US9000386,Wireless Energy Storage Device,2024,Sofia Tanaka,FR,Bosch
+US9000395,Modular Drug Delivery Mechanism,2024,Emma Wang,TW,Apple Inc
+US9000433,Optical Communication System,2024,Park Kim,IN,Bosch
+US9000449,Biomedical Drug Delivery Mechanism,2024,Carlos Brown,IN,Canon
+US9000455,Quantum Energy Storage Device,2024,Yuki Dupont,GB,Siemens
+US9000461,Wireless Communication System,2024,Park Rossi,TW,Apple Inc
+US9000468,Biomedical Drug Delivery Mechanism,2024,Yuki Johnson,GB,Microsoft
+US9000503,Autonomous Display Panel,2024,Kenji Rossi,US,Samsung
+US9000506,Autonomous Network Protocol,2024,Omar Tanaka,IN,Lg Electronics
+US9000517,Biomedical Data Processing Method,2024,Carlos Dupont,TW,Siemens
+US9000526,Encrypted Machine Learning Model,2024,Sofia Lee,KR,Apple Inc
+US9000532,Encrypted Machine Learning Model,2024,James Rossi,DE,Apple Inc
+US9000542,Photonic Sensor Array,2024,Sofia Sato,JP,Intel
+US9000547,Neural Energy Storage Device,2024,John Dupont,KR,Siemens
+US9000548,Quantum Battery Technology,2024,Omar Zhang,FR,Bosch
+US9000554,Semiconductor Sensor Array,2024,Sofia Kim,CA,Ibm
+US9000590,Photonic Energy Storage Device,2024,Alice Hassan,FR,Canon
+US9000594,Autonomous Image Recognition Algorithm,2024,Li Rossi,US,Siemens
+US9000614,Semiconductor Machine Learning Model,2024,Park Hassan,JP,Qualcomm
+US9000617,Encrypted Network Protocol,2024,Park Lee,KR,Lg Electronics
+US9000619,Quantum Energy Storage Device,2024,James Dupont,FR,Apple Inc
+US9000622,Biomedical Data Processing Method,2024,Park Lee,KR,Google Llc
+US9000627,Modular Display Panel,2024,John Mueller,KR,Ibm
+US9000646,Neural Battery Technology,2024,Priya Kim,CN,Apple Inc
+US9000672,Modular Battery Technology,2024,Priya Mueller,JP,Microsoft
+US9000673,Quantum Display Panel,2024,Park Tanaka,TW,Samsung
+US9000674,Wireless Network Protocol,2024,Omar Zhang,GB,Bosch
+US9000683,Modular Sensor Array,2024,Wei Zhang,GB,Basf
+US9000688,Semiconductor Drug Delivery Mechanism,2024,Park Brown,US,Basf
+US9000689,Quantum Energy Storage Device,2024,Kenji Mueller,KR,Qualcomm
+US9000694,Quantum Communication System,2024,Wei Zhang,TW,Apple Inc
+US9000705,Photonic Battery Technology,2024,Yuki Zhang,FR,Ibm
+US9000714,Modular Energy Storage Device,2024,Wei Tanaka,DE,Microsoft
+US9000722,Neural Data Processing Method,2024,Yuki Mueller,FR,Samsung
+US9000732,Neural Sensor Array,2024,Priya Zhang,DE,Lg Electronics
+US9000748,Neural Communication System,2024,Sofia Dupont,TW,Huawei
+US9000754,Neural Data Processing Method,2024,Min Lee,FR,Huawei
+US9000761,Modular Machine Learning Model,2024,Wei Johnson,CA,Bosch
+US9000768,Optical Machine Learning Model,2024,Kenji Johnson,DE,Siemens
+US9000770,Quantum Display Panel,2024,Omar Tanaka,IN,Siemens
+US9000776,Quantum Sensor Array,2024,Sofia Zhang,TW,Apple Inc
+US9000789,Wireless Network Protocol,2024,Kenji Johnson,CA,Bosch
+US9000815,Autonomous Data Processing Method,2024,Li Patel,IN,Basf
+US9000830,Wireless Network Protocol,2024,Emma Rossi,KR,Samsung
+US9000837,Biomedical Energy Storage Device,2024,Sofia Hassan,CA,Lg Electronics
+US9000846,Photonic Energy Storage Device,2024,Alice Wang,US,Huawei
+US9000862,Photonic Energy Storage Device,2024,Sofia Dupont,TW,Microsoft
+US9000864,Semiconductor Data Processing Method,2024,Sofia Kim,FR,Siemens
+US9000871,Modular Network Protocol,2024,Park Sato,CA,Toyota
+US9000876,Optical Drug Delivery Mechanism,2024,Park Brown,IN,Huawei
+US9000901,Modular Machine Learning Model,2024,Min Lee,JP,Microsoft
+US9000909,Semiconductor Image Recognition Algorithm,2024,Min Dupont,FR,Siemens
+US9000910,Photonic Sensor Array,2024,Priya Brown,US,Apple Inc
+US9000912,Encrypted Sensor Array,2024,James Wang,CN,Siemens
+US9000913,Photonic Drug Delivery Mechanism,2024,Emma Rossi,IN,Basf
+US9000923,Optical Drug Delivery Mechanism,2024,Priya Zhang,DE,Lg Electronics
+US9000924,Autonomous Image Recognition Algorithm,2024,Sofia Johnson,GB,Huawei
+US9000925,Wireless Energy Storage Device,2024,Hans Wang,TW,Apple Inc
+US9000926,Modular Network Protocol,2024,Priya Zhang,DE,Bosch
+US9000929,Optical Display Panel,2024,Kenji Lee,IN,Toyota
+US9000945,Neural Communication System,2024,Park Garcia,CA,Lg Electronics
+US9000946,Encrypted Display Panel,2024,James Rossi,DE,Basf
+US9000957,Semiconductor Drug Delivery Mechanism,2024,Alice Rossi,GB,Apple Inc
+US9000967,Wireless Data Processing Method,2024,Li Hassan,US,Apple Inc

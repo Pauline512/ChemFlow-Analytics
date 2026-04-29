@@ -1,0 +1,16 @@
+INVENTORS CLEANING REPORT
+========================================
+Rows    : 288
+Columns : 3
+
+Missing values per column:
+inventor_id    0
+name           0
+country        0
+dtype: int64
+
+Sample (first 3 rows):
+  inventor_id          name country
+0     INV0001   Emma Tanaka      CA
+1     INV0002     Park Wang      FR
+2     INV0003  Sofia Dupont      CA

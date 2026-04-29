@@ -1,0 +1,51 @@
+{
+    "topic": "Chemistry Patents \u2014 Advanced Analysis",
+    "decade_analysis": [
+        {
+            "decade": 2010,
+            "patent_count": 474,
+            "years_active": 5,
+            "avg_per_year": 94.8
+        },
+        {
+            "decade": 2020,
+            "patent_count": 526,
+            "years_active": 5,
+            "avg_per_year": 105.2
+        }
+    ],
+    "inventor_tiers": [
+        {
+            "tier": "Active (2-4)",
+            "inventor_count": 190,
+            "total_patents": 571,
+            "avg_patents": 3.01
+        },
+        {
+            "tier": "Prolific (5-9)",
+            "inventor_count": 70,
+            "total_patents": 401,
+            "avg_patents": 5.73
+        },
+        {
+            "tier": "Single (1)",
+            "inventor_count": 28,
+            "total_patents": 28,
+            "avg_patents": 1.0
+        }
+    ],
+    "top5_countries": [
+        "DE",
+        "TW",
+        "FR",
+        "US",
+        "KR"
+    ],
+    "corporate_vs_independent": [
+        {
+            "inventor_type": "Corporate",
+            "patents": 1000
+        }
+    ],
+    "recent_patents_count": 20
+}

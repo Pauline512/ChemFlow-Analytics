@@ -1,0 +1,15 @@
+COMPANIES CLEANING REPORT
+========================================
+Rows    : 15
+Columns : 2
+
+Missing values per column:
+company_id    0
+name          0
+dtype: int64
+
+Sample (first 3 rows):
+  company_id        name
+0    COMP001         Ibm
+1    COMP002     Samsung
+2    COMP003  Google Llc

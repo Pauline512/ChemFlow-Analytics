@@ -1,0 +1,16 @@
+RELATIONSHIPS CLEANING REPORT
+========================================
+Rows    : 1,000
+Columns : 3
+
+Missing values per column:
+patent_id      0
+inventor_id    0
+company_id     0
+dtype: int64
+
+Sample (first 3 rows):
+   patent_id inventor_id company_id
+0  US9000001     INV0287    COMP009
+1  US9000002     INV0053    COMP004
+2  US9000003     INV0278    COMP006
