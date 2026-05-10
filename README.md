@@ -1,247 +1,262 @@
-"""
-01_download_data.py
-===================
-Downloads real USPTO patent data from PatentsView (S3 direct links).
-Filters to a specific technology topic using CPC classification codes.
+# ⚗️ ChemFlow Analytics
+### Global Patent Intelligence Data Pipeline
 
-Topic choices:
-  - "chemistry"  → CPC section C  (C01–C40: chemistry, metallurgy)
-  - "lighting"   → CPC class  F21 (lighting devices and systems)
+> A complete, reproducible data engineering pipeline that collects, cleans, stores, and analyses real-world **USPTO chemistry patent data** — built as part of a Cloud Computing & Big Data mini project.
 
-Outputs (saved to data/):
-  raw_patents.csv, raw_inventors.csv,
-  raw_companies.csv, raw_relationships.csv
-"""
+---
 
-import requests
-import pandas as pd
-import zipfile
-import io
-import os
+## 📌 What This Project Does
 
-# ── Configuration ──────────────────────────────────────────────────────────────
+This pipeline works like a real data engineering system. It pulls patent data from the **PatentsView** database (published by the US Patent and Trademark Office), filters it to the **Chemistry & Metallurgy** domain (CPC Section C), cleans it, loads it into a relational database, and generates reports, charts, and an interactive dashboard.
 
-TOPIC = "chemistry"   # change to "lighting" if preferred
+**In numbers:**
+- 🗂️ **1,000** chemistry patents processed
+- 👤 **288** inventors across 10+ countries
+- 🏢 **15** major companies (assignees)
+- 📊 **7** SQL queries (including CTEs and window functions)
+- 📁 **8** Python scripts | **1,600+** lines of code
 
-TOPIC_CPC = {
-    "chemistry": "C",    # All of CPC section C (chemistry & metallurgy)
-    "lighting":  "F21",  # CPC class F21 (lighting)
+---
+
+## 🏗️ Pipeline Architecture
+
+```
+USPTO / PatentsView (S3)
+         │
+         ▼
+┌─────────────────────┐
+│ 01_download_data.py │  — Streams TSV.zip files, filters by CPC section C
+└────────┬────────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  02_clean_data.py   │  — Deduplicates, fills nulls, standardises formats
+└────────┬────────────┘
+         │
+         ▼
+┌──────────────────────┐
+│ 03_load_database.py  │  — Inserts into SQLite with foreign key constraints
+└────────┬─────────────┘
+         │
+         ▼
+┌─────────────────────┐
+│   04_queries.py     │  — Runs Q1–Q7 (JOINs, CTEs, window functions)
+└────────┬────────────┘
+         │
+         ▼
+┌─────────────────────┐
+│   05_reports.py     │  — Console report + CSV files + JSON report
+└────────┬────────────┘
+         │
+         ▼
+┌──────────────────────────┐
+│  06_visualizations.py    │  — 5 matplotlib charts saved to reports/charts/
+└────────┬─────────────────┘
+         │
+         ▼
+┌─────────────────────────────┐
+│  07_advanced_analysis.py    │  — Decade trends, productivity tiers, index
+└────────┬────────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│  dashboard.py   │  — Interactive Streamlit + Plotly dashboard
+└─────────────────┘
+```
+
+---
+
+## 📂 Project Structure
+
+```
+ChemFlow-Analytics/
+│
+├── scripts/
+│   ├── 01_download_data.py        # Downloads & filters USPTO PatentsView data
+│   ├── 02_clean_data.py           # Cleans raw CSVs with pandas
+│   ├── 03_load_database.py        # Loads clean data into SQLite
+│   ├── 04_queries.py              # Runs all 7 SQL queries (Q1–Q7)
+│   ├── 05_reports.py              # Console + CSV + JSON reports
+│   ├── 06_visualizations.py       # 5 matplotlib charts
+│   ├── 07_advanced_analysis.py    # Advanced pattern analysis
+│   └── read_data.py               # Utility: inspect raw data files
+│
+├── data/
+│   ├── raw_patents.csv            # Downloaded from PatentsView
+│   ├── raw_inventors.csv
+│   ├── raw_companies.csv
+│   ├── raw_relationships.csv
+│   ├── clean_patents.csv          # After pandas cleaning
+│   ├── clean_inventors.csv
+│   ├── clean_companies.csv
+│   └── clean_relationships.csv
+│
+├── database/
+│   ├── schema.sql                 # Table definitions with foreign keys
+│   └── patents.db                 # SQLite database (auto-generated)
+│
+├── reports/
+│   ├── top_inventors.csv          # Q1 output
+│   ├── top_companies.csv          # Q2 output
+│   ├── country_trends.csv         # Q3 output
+│   ├── yearly_trends.csv          # Q4 output
+│   ├── patents_full_join.csv      # Q5 output
+│   ├── top_inventor_per_country.csv  # Q6 CTE output
+│   ├── inventor_rankings.csv      # Q7 window function output
+│   ├── patent_report.json         # Full JSON summary report
+│   ├── advanced_analysis.json
+│   └── charts/
+│       ├── top_inventors.png
+│       ├── top_companies.png
+│       ├── yearly_trends.png
+│       ├── country_distribution.png
+│       └── inventors_by_country.png
+│
+└── dashboard.py                   # Streamlit interactive dashboard
+```
+
+---
+
+## 🗄️ Database Schema
+
+```sql
+-- Core tables
+CREATE TABLE patents (
+    patent_id   TEXT PRIMARY KEY,
+    title       TEXT NOT NULL,
+    abstract    TEXT,
+    filing_date TEXT,
+    year        INTEGER
+);
+
+CREATE TABLE inventors (
+    inventor_id TEXT PRIMARY KEY,
+    name        TEXT NOT NULL,
+    country     TEXT
+);
+
+CREATE TABLE companies (
+    company_id  TEXT PRIMARY KEY,
+    name        TEXT NOT NULL
+);
+
+-- Junction table linking all three
+CREATE TABLE relationships (
+    patent_id   TEXT REFERENCES patents(patent_id),
+    inventor_id TEXT REFERENCES inventors(inventor_id),
+    company_id  TEXT REFERENCES companies(company_id)
+);
+```
+
+---
+
+## 🔍 SQL Queries (Q1–Q7)
+
+| # | Query | SQL Feature Used |
+|---|-------|-----------------|
+| Q1 | Top inventors by patent count | `GROUP BY` + `COUNT DISTINCT` |
+| Q2 | Top companies by patent count | `JOIN` + `GROUP BY` |
+| Q3 | Countries producing the most patents | Multi-table `JOIN` + `WHERE` |
+| Q4 | Patents filed per year (trend) | `GROUP BY year ORDER BY year` |
+| Q5 | Full patent details (patents + inventors + companies) | 3-table `JOIN` |
+| Q6 | Top inventor per country | `WITH` (CTE) + `RANK() OVER PARTITION BY` |
+| Q7 | Global inventor ranking with share % | `RANK`, `DENSE_RANK`, `NTILE`, `SUM OVER` |
+
+---
+
+## 📋 Reports Generated
+
+### A. Console Report (Terminal)
+Printed directly to the terminal with a formatted layout and ASCII bar charts showing patents per year.
+
+### B. CSV Reports
+| File | Contents |
+|------|----------|
+| `top_inventors.csv` | Name, country, patent count |
+| `top_companies.csv` | Company name, patent count |
+| `country_trends.csv` | Country, patents, inventors, share % |
+| `yearly_trends.csv` | Year, patent count (2015–2024) |
+
+### C. JSON Report (`patent_report.json`)
+```json
+{
+  "total_patents": 1000,
+  "top_inventors": [{"rank": 1, "name": "John Dupont", "patents": 8}],
+  "top_companies": [{"rank": 1, "name": "Samsung", "patents": 74}],
+  "top_countries": [{"country": "DE", "patents": 124, "share": 0.124}]
 }
+```
 
-CPC_PREFIX = TOPIC_CPC[TOPIC]
-MAX_PATENTS = 5000   # max patent IDs to keep after CPC filter
+### D. Charts (5 PNG files)
+- Top 10 Inventors — horizontal bar chart
+- Top 10 Companies — vertical bar chart
+- Patents Per Year — line chart with fill
+- Country Distribution — pie chart
+- Inventors by Country — grouped bar chart
 
-os.makedirs("data", exist_ok=True)
+### E. Advanced Analysis
+- Patent output by decade with averages
+- Inventor productivity tiers (Elite / Prolific / Active / Single)
+- Innovation trend index (year-over-year growth)
 
-# ── Direct S3 download URLs ────────────────────────────────────────────────────
-S3 = "https://s3.amazonaws.com/data.patentsview.org/download/"
+---
 
-FILES = {
-    "cpc":             S3 + "g_cpc_current.tsv.zip",
-    "patent":          S3 + "g_patent.tsv.zip",
-    "patent_abstract": S3 + "g_patent_abstract.tsv.zip",
-    "inventor":        S3 + "g_inventor_disambiguated.tsv.zip",
-    "assignee":        S3 + "g_assignee_disambiguated.tsv.zip",
-    "patent_inventor": S3 + "g_patent_inventor.tsv.zip",
-    "patent_assignee": S3 + "g_patent_assignee.tsv.zip",
-    "location":        S3 + "g_location_disambiguated.tsv.zip",
-}
+## 🚀 How to Run
 
+### 1. Install requirements
+```bash
+pip install pandas matplotlib plotly streamlit
+```
 
-# ── Helper: stream zip → DataFrame ────────────────────────────────────────────
-def download_tsv(label, url, nrows=None, usecols=None):
-    """Stream a .tsv.zip from URL, decompress in memory, return DataFrame."""
-    print(f"\n  [{label}]")
-    print(f"  Fetching: {url}")
-    r = requests.get(url, stream=True, timeout=300)
-    if r.status_code != 200:
-        raise RuntimeError(f"HTTP {r.status_code} — could not reach {url}")
+### 2. Run the full pipeline (steps in order)
+```bash
+python scripts/01_download_data.py      # ~5–10 min (downloads from internet)
+python scripts/02_clean_data.py
+python scripts/03_load_database.py
+python scripts/04_queries.py
+python scripts/05_reports.py
+python scripts/06_visualizations.py
+python scripts/07_advanced_analysis.py
+```
 
-    print("  Downloading...", end=" ", flush=True)
-    chunks = []
-    total = 0
-    for chunk in r.iter_content(chunk_size=1024 * 512):
-        chunks.append(chunk)
-        total += len(chunk)
-        print(f"\r  Downloaded {total / 1e6:.1f} MB", end="", flush=True)
-    content = b"".join(chunks)
-    print(f" — done ({total / 1e6:.1f} MB)")
+### 3. Launch the dashboard
+```bash
+streamlit run dashboard.py
+```
 
-    with zipfile.ZipFile(io.BytesIO(content)) as z:
-        tsv_name = next(f for f in z.namelist() if f.endswith(".tsv"))
-        print(f"  Reading {tsv_name} ...", end=" ", flush=True)
-        with z.open(tsv_name) as f:
-            df = pd.read_csv(
-                f, sep="\t", low_memory=False,
-                nrows=nrows, usecols=usecols,
-                on_bad_lines="skip"
-            )
-    print(f"{len(df):,} rows | cols: {list(df.columns)}")
-    return df
+> **Shortcut:** Steps 2–7 can be run immediately using the pre-cleaned data already committed to `data/`. Only Step 1 requires a live internet connection.
 
+---
 
-def filter_by_patent_ids(df, id_set):
-    """Keep only rows whose patent_id is in id_set."""
-    col = next((c for c in df.columns if "patent_id" in c.lower()), None)
-    if col:
-        return df[df[col].astype(str).isin(id_set)].copy()
-    return df
+## 🌐 Data Source
 
+| | |
+|-|-|
+| **Source** | PatentsView — USPTO Granted Patent Disambiguated Data |
+| **URL** | https://data.patentsview.org/ |
+| **Format** | TSV.zip files (streamed and decompressed in memory) |
+| **Filter** | CPC Section C — Chemistry & Metallurgy (C01–C40) |
+| **Cap** | 5,000 patent IDs (configurable via `MAX_PATENTS`) |
 
-# ── STEP 1: CPC filter — get patent IDs for chosen topic ──────────────────────
-print("=" * 62)
-print(f"  PatentsView Patent Pipeline — topic: {TOPIC.upper()}")
-print(f"  CPC filter prefix: '{CPC_PREFIX}'")
-print("=" * 62)
+---
 
-cpc_df = download_tsv("CPC classifications", FILES["cpc"])
+## 🛠️ Tools & Technologies
 
-# Detect CPC code column
-cpc_code_col = next(
-    (c for c in cpc_df.columns if "cpc" in c.lower() and
-     any(x in c.lower() for x in ["id", "code", "group", "subgroup"])),
-    cpc_df.columns[1]
-)
-pat_col_cpc = next(c for c in cpc_df.columns if "patent_id" in c.lower())
+| Tool | Role |
+|------|------|
+| **Python 3** | Pipeline scripting |
+| **pandas** | Data cleaning & transformation |
+| **SQLite** | Relational database |
+| **SQL** | Analytical queries (CTEs, window functions, JOINs) |
+| **matplotlib** | Static data visualisations |
+| **plotly** | Interactive charts in dashboard |
+| **Streamlit** | Web-based interactive dashboard |
+| **GitHub** | Version control & submission |
 
-print(f"\n  CPC code column: '{cpc_code_col}'")
-print(f"  Sample values:   {cpc_df[cpc_code_col].dropna().head(5).tolist()}")
+---
 
-mask = cpc_df[cpc_code_col].astype(str).str.startswith(CPC_PREFIX)
-topic_cpc = cpc_df[mask]
-print(f"  Rows matching '{CPC_PREFIX}*': {len(topic_cpc):,}")
+## 👩‍💻 Author
 
-topic_patent_ids = topic_cpc[pat_col_cpc].dropna().unique()[:MAX_PATENTS]
-topic_patent_ids_set = set(topic_patent_ids.astype(str))
-print(f"  Unique patent IDs selected:  {len(topic_patent_ids_set):,}")
-
-
-# ── STEP 2: Download and filter remaining tables ───────────────────────────────
-
-patent_raw   = download_tsv("g_patent",                FILES["patent"])
-patent_raw   = filter_by_patent_ids(patent_raw, topic_patent_ids_set)
-print(f"  After topic filter: {len(patent_raw):,} patents")
-
-abstract_raw = download_tsv("g_patent_abstract",       FILES["patent_abstract"])
-abstract_raw = filter_by_patent_ids(abstract_raw, topic_patent_ids_set)
-
-inventor_raw = download_tsv("g_inventor_disambiguated", FILES["inventor"])
-assignee_raw = download_tsv("g_assignee_disambiguated", FILES["assignee"])
-
-pi_raw       = download_tsv("g_patent_inventor",        FILES["patent_inventor"])
-pi_raw       = filter_by_patent_ids(pi_raw, topic_patent_ids_set)
-
-pa_raw       = download_tsv("g_patent_assignee",        FILES["patent_assignee"])
-pa_raw       = filter_by_patent_ids(pa_raw, topic_patent_ids_set)
-
-location_raw = download_tsv("g_location_disambiguated", FILES["location"])
-
-
-# ── STEP 3: raw_patents.csv ────────────────────────────────────────────────────
-print("\n" + "─" * 62)
-print("Building raw_patents.csv ...")
-
-pid   = next(c for c in patent_raw.columns if "patent_id" in c.lower())
-ptitl = next(c for c in patent_raw.columns if "title"     in c.lower())
-pdate = next(c for c in patent_raw.columns if "date"      in c.lower())
-
-patents_out = patent_raw[[pid, ptitl, pdate]].copy()
-patents_out.columns = ["patent_id", "title", "filing_date"]
-patents_out["filing_date"] = pd.to_datetime(patents_out["filing_date"], errors="coerce")
-patents_out["year"]        = patents_out["filing_date"].dt.year
-patents_out["filing_date"] = patents_out["filing_date"].dt.strftime("%Y-%m-%d")
-
-ab_pid = next((c for c in abstract_raw.columns if "patent_id" in c.lower()), None)
-ab_txt = next((c for c in abstract_raw.columns if "abstract"  in c.lower()), None)
-if ab_pid and ab_txt:
-    abs_clean = abstract_raw[[ab_pid, ab_txt]].rename(
-        columns={ab_pid: "patent_id", ab_txt: "abstract"})
-    patents_out = patents_out.merge(abs_clean, on="patent_id", how="left")
-else:
-    patents_out["abstract"] = ""
-
-patents_out.to_csv("data/raw_patents.csv", index=False)
-print(f"  → data/raw_patents.csv        ({len(patents_out):,} rows)")
-
-
-# ── STEP 4: raw_inventors.csv ──────────────────────────────────────────────────
-print("\nBuilding raw_inventors.csv ...")
-
-inv_id  = next(c for c in inventor_raw.columns if "inventor_id"  in c.lower())
-inv_fn  = next((c for c in inventor_raw.columns if "first"       in c.lower()), None)
-inv_ln  = next((c for c in inventor_raw.columns if "last"        in c.lower()), None)
-inv_loc = next((c for c in inventor_raw.columns if "location_id" in c.lower()), None)
-
-inventors_out = pd.DataFrame()
-inventors_out["inventor_id"] = inventor_raw[inv_id]
-inventors_out["name"] = (
-    (inventor_raw[inv_fn].fillna("") + " " + inventor_raw[inv_ln].fillna("")).str.strip()
-    if inv_fn and inv_ln else inventor_raw[inv_id]
-)
-
-loc_id_col  = next((c for c in location_raw.columns if "location_id" in c.lower()), None)
-loc_cty_col = next((c for c in location_raw.columns if "country"     in c.lower()), None)
-
-if inv_loc and loc_id_col and loc_cty_col:
-    loc_map = location_raw[[loc_id_col, loc_cty_col]].rename(
-        columns={loc_id_col: "loc_id", loc_cty_col: "country"})
-    inventors_out["loc_id"] = inventor_raw[inv_loc].values
-    inventors_out = inventors_out.merge(loc_map, on="loc_id", how="left")
-    inventors_out.drop(columns=["loc_id"], inplace=True)
-else:
-    inventors_out["country"] = "Unknown"
-
-inventors_out.to_csv("data/raw_inventors.csv", index=False)
-print(f"  → data/raw_inventors.csv      ({len(inventors_out):,} rows)")
-
-
-# ── STEP 5: raw_companies.csv ──────────────────────────────────────────────────
-print("\nBuilding raw_companies.csv ...")
-
-asg_id  = next(c for c in assignee_raw.columns if "assignee_id"   in c.lower())
-asg_org = next((c for c in assignee_raw.columns if "organization" in c.lower()), None)
-asg_nm  = next((c for c in assignee_raw.columns if "name"         in c.lower()), None)
-
-companies_out = pd.DataFrame()
-companies_out["company_id"] = assignee_raw[asg_id]
-companies_out["name"] = (
-    assignee_raw[asg_org] if asg_org else
-    assignee_raw[asg_nm]  if asg_nm  else
-    assignee_raw[asg_id]
-)
-companies_out = companies_out.dropna(subset=["name"])
-companies_out.to_csv("data/raw_companies.csv", index=False)
-print(f"  → data/raw_companies.csv      ({len(companies_out):,} rows)")
-
-
-# ── STEP 6: raw_relationships.csv ─────────────────────────────────────────────
-print("\nBuilding raw_relationships.csv ...")
-
-pi_pat = next(c for c in pi_raw.columns if "patent_id"   in c.lower())
-pi_inv = next(c for c in pi_raw.columns if "inventor_id" in c.lower())
-inv_links = pi_raw[[pi_pat, pi_inv]].rename(
-    columns={pi_pat: "patent_id", pi_inv: "inventor_id"})
-
-pa_pat = next(c for c in pa_raw.columns if "patent_id"   in c.lower())
-pa_asg = next(c for c in pa_raw.columns if "assignee_id" in c.lower())
-asg_links = pa_raw[[pa_pat, pa_asg]].rename(
-    columns={pa_pat: "patent_id", pa_asg: "company_id"})
-
-relationships_out = inv_links.merge(asg_links, on="patent_id", how="inner")
-relationships_out = relationships_out.dropna()
-relationships_out.to_csv("data/raw_relationships.csv", index=False)
-print(f"  → data/raw_relationships.csv  ({len(relationships_out):,} rows)")
-
-
-# ── Summary ────────────────────────────────────────────────────────────────────
-print("\n" + "=" * 62)
-print(f"  Done! Topic: {TOPIC.upper()}  |  CPC prefix: {CPC_PREFIX}*")
-print("  Raw files saved to data/:")
-for f in ["raw_patents.csv", "raw_inventors.csv",
-          "raw_companies.csv", "raw_relationships.csv"]:
-    path = f"data/{f}"
-    if os.path.exists(path):
-        kb = os.path.getsize(path) / 1024
-        print(f"    {f:35s} {kb:8.1f} KB")
-print("\n  Next step: python scripts/02_clean_data.py")
-print("=" * 62)
+**Pauline Mbasani**  
+Cloud Computing & Big Data — Mini Project  
+*ChemFlow Analytics Pipeline*
